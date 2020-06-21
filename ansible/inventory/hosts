@@ -1,5 +1,5 @@
 [ansible_demo]
-f5 ansible_host=10.0.0.1 ansible_user=admin private_ip=192.168.0.1 ansible_ssh_pass=admin
+f5 ansible_host=10.0.0.1 ansible_user=admin private_ip=10.1.20.1 ansible_ssh_pass=xxxxxx
 
 [ansible_test]
 bigip1 ansible_host=192.168.0.1
