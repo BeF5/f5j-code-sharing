@@ -1,0 +1,225 @@
+---
+- name: create 2x BIG-IP HA instances with basic configurations
+  hosts: ansible_test
+  gather_facts: no
+  connection: local
+  collections: 
+  - f5networks.f5_modules
+
+  tasks:
+
+    - name: Task 1 - Configure admin user's password
+      uri:
+        url: "https://{{ ansible_host }}/mgmt/shared/authz/users/admin"
+        method: PATCH
+        body: '{"oldPassword":"admin","password":"{{ admin_password }}"}'
+        body_format: "json"
+        validate_certs: "no"
+        force_basic_auth: "yes"
+        user: "admin"
+        password: "admin"
+        status_code: 200 
+
+    - name: Task 2 - Change root user's password
+      bigip_user:
+        provider: "{{ provider }}"
+        username_credential: "{{ root_user }}"
+        password_credential: "{{ root_password }}"
+
+    - name: Task 3 - License BIG-IPs using Registration Keys
+      bigip_device_license:
+        provider: "{{ provider }}"
+        license_key: "{{ bigip_lic }}"
+        accept_eula: "yes"
+    
+    - name: Task 4 - Disable GUI Setup on BIG-IPs
+      bigip_sys_global:
+        provider: "{{ provider }}"
+        state: "present"
+        gui_setup: "no"
+        mgmt_dhcp: "no"
+    
+    - name: Task 5 - Change host names of BIG-IPs
+      bigip_hostname:
+        provider: "{{ provider }}"
+        hostname: "{{ bigip_hostname }}"
+    
+    - name: TASK 6 - Configure NTP Servers & Time Zone
+      bigip_device_ntp:
+        provider: "{{ provider }}"
+        ntp_servers:
+          - "{{ ntp1 }}"
+        timezone: "{{ ntp_timezone }}"
+
+    - name: TASK 7 -  Configure DNS Servers
+      bigip_device_dns:
+        provider: "{{ provider }}"
+        name_servers:
+          - "{{ dns1 }}"
+          - "{{ dns2 }}"
+        search:
+          - f5jp.local
+    
+    # For Ubuntu, install rpm with "sudo apt install rpm" command to install DO, AS3 and TS RPM packages 
+    - name: Task 8 - Install DO
+      bigip_lx_package:
+        provider: "{{ provider }}"
+        package: "{{ roles_path }}/library/f5-declarative-onboarding-1.11.1-1.noarch.rpm"
+    
+    - name: Task 9 - Install AS3
+      bigip_lx_package:
+        provider: "{{ provider }}"
+        package: "{{ roles_path }}/library/f5-appsvcs-3.18.0-4.noarch.rpm"
+
+    - name: Task 10 - Install TS
+      bigip_lx_package:
+        provider: "{{ provider }}"
+        package: "{{ roles_path }}/library/f5-telemetry-1.10.0-2.noarch.rpm"
+
+    - name: Task 11 - Create External VLAN
+      bigip_vlan:
+        provider: "{{ provider }}"
+        name: "{{ ext_vlan_name }}"
+        untagged_interfaces: "{{ ext_vlan_int }}"
+        
+    - name: Task 12 - Create Internal VLAN
+      bigip_vlan:
+        provider: "{{ provider }}"
+        name: "{{ int_vlan_name }}"
+        untagged_interfaces: "{{ int_vlan_int }}"
+  
+    - name: Task 13 - Create HA VLAN
+      bigip_vlan:
+        provider: "{{ provider }}"
+        name: "{{ ha_vlan_name }}"
+        untagged_interfaces: "{{ ha_vlan_int }}"
+  
+    - name: Task 14 - Assign Self-IPs
+      bigip_selfip:
+        provider: "{{ provider }}"
+        name: "{{ item.selfIP }}"
+        address: "{{ item.selfIP }}"
+        netmask: "{{ item.netmask }}"
+        vlan: "{{ item.vlan_name }}"
+        allow_service: "{{ item.port_lockdown }}"
+      with_items: "{{ nf_selfIP }}"
+  
+    - name: Task 15 - Specify Configsync, Mirroring and Failover IPs
+      bigip_device_connectivity:
+        provider: "{{ provider }}"
+        config_sync_ip: "{{ ha_selfip }}"
+        mirror_primary_address: "{{ ha_selfip }}"
+        #unicast_failover:
+        #  - address: "{{ ha_selfip }}"
+  
+    - name: Task 16 - Add-to-trust to be executed only from bigip1 to add bigip2
+      bigip_device_trust:
+        provider: "{{ provider }}"
+        peer_server: "{{ peer_mgmt }}"
+        peer_hostname: "{{ peer_hostname }}"
+        peer_user: "{{ admin_user }}"
+        peer_password: "{{ admin_password }}"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 17 - Create a Sync-failover device group
+      bigip_device_group:
+        provider: "{{ provider }}"
+        name: "{{ devgroup }}"
+        type: "sync-failover"
+        auto_sync: "yes"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 18 - Add local device to the device group
+      bigip_device_group_member:
+        provider: "{{ provider }}"
+        device_group: "{{ devgroup }}"
+        name: "{{ bigip_hostname }}"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 19 - Add remote device to the device group
+      bigip_device_group_member:
+        provider: "{{ provider }}"
+        device_group: "{{ devgroup }}"
+        name: "{{ peer_hostname }}"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 20 - Perform Initial sync of device-group
+      bigip_configsync_action:
+        provider: "{{ provider }}"
+        device_group: "{{ devgroup }}"
+        sync_device_to_group: "yes"
+        overwrite_config: "yes"
+      when: inventory_hostname in groups['ansible_test_master']
+      
+    - name: Task 21 - Create External floating Self-IP to traffic-group-1
+      bigip_selfip:
+        provider: "{{ provider }}"
+        name: "{{ ext_selfipname }}"
+        address: "{{ ext_floaterip }}"
+        netmask: "{{ netmask }}"
+        vlan: "{{ ext_vlan_name }}"
+        allow_service: "default"
+        traffic_group: "traffic-group-1"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 22 - Create Internal floating Self-IP to traffic-group-1
+      bigip_selfip:
+        provider: "{{ provider }}"
+        name: "{{ int_selfipname }}"
+        address: "{{ int_floaterip }}"
+        netmask: "{{ netmask }}"
+        vlan: "{{ int_vlan_name }}"
+        allow_service: "default"
+        traffic_group: "traffic-group-1"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 23 - Create a Pool
+      bigip_pool:
+        provider: "{{ provider }}"
+        state: "present"
+        name: "pool_webservers"
+        lb_method: "round-robin"
+        #monitors:
+        #  - "http"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 24 - Add Pool Members to the Pool
+      bigip_pool_member:
+        provider: "{{ provider }}"
+        state: "present"
+        pool: "pool_webservers"
+        host: "10.99.100.{{ item }}"
+        port: "80"
+      with_sequence: start=11 end=13
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 25 - Add iRule
+      bigip_irule:
+        provider: "{{ provider }}"
+        state: "present"
+        name: "rule_Sorry"
+        content: "{{ lookup('template', '../configs/irules/sorry.tcl') }}"
+        module: "ltm"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 26 - Create Virtual Server
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        state: "present"
+        name: "vs_webserver"
+        partition: "Common"
+        destination: "10.99.1.81"
+        pool: "pool_webservers"
+        port: "80"
+        snat: "Automap"
+        profiles:
+          - "http"
+        irules:
+          - "rule_Sorry"
+      when: inventory_hostname in groups['ansible_test_master']
+  
+    - name: Task 27 - Save running configuration to disk
+      bigip_config:
+        provider: "{{ provider }}"
+        save: "yes"
+...
