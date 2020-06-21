@@ -187,7 +187,7 @@
         provider: "{{ provider }}"
         state: "present"
         pool: "pool_webservers"
-        host: "10.99.100.{{ item }}"
+        host: "192.168.0.{{ item }}"
         port: "80"
       with_sequence: start=11 end=13
       when: inventory_hostname in groups['ansible_test_master']
@@ -207,7 +207,7 @@
         state: "present"
         name: "vs_webserver"
         partition: "Common"
-        destination: "10.99.1.81"
+        destination: "192.168.0.101"
         pool: "pool_webservers"
         port: "80"
         snat: "Automap"
