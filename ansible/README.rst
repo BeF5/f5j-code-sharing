@@ -9,7 +9,9 @@ BIG-IPをAnsibleで設定する際の、サンプルファイル (Ansible Playbo
 はじめに
 --------------------------------
 ここで紹介している設定ファイル等は、F5社が公式にサポートするものではありません。
-検証等のサンプルとして、ご利用ください。
+
+
+あくまでも検証等のサンプル用として、ご利用ください。
 
 ディレクトリの説明
 --------------------------------
@@ -17,5 +19,10 @@ BIG-IPをAnsibleで設定する際の、サンプルファイル (Ansible Playbo
 
 - config: iRules等の設定ファイルを格納するディレクトリ
 - inventory: グループやホストに関する変数等を格納するディレクトリ
-- playbook: Ansible Playbookを格納するディレクトリ
+- playbook: Ansible Playbookを格納するディレクトリで、以下のplaybookを公開しています。
+
+  - as3_comfig_sample.yml: AS3を使ってBIG-IPの基本的な設定を実行する、Playbookのサンプル
+  - bigip_config_sample.yml: BIG-IPの基本的な設定を実行する、Playbookのサンプル
+  - bigip_ha_config_sample.yml: 工場出荷時の2つのBIG-IPインスタンスから、HA (High Availability)構成を実現する、Playbookのサンプル
+
 - templates: AS3による設定時のテンプレート (Jinja2)を格納するディレクトリ
