@@ -1,6 +1,6 @@
 ---
 - name: Create Pool, Pool Member and Virtual Server
-  hosts: ansible_test
+  hosts: ansible_demo
   connection: local
   gather_facts: false
   collections:

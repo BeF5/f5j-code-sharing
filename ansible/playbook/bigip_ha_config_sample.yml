@@ -1,6 +1,6 @@
 ---
 - name: create 2x BIG-IP HA instances with basic configurations
-  hosts: ansible_test
+  hosts: ansible_demo
   gather_facts: no
   connection: local
   collections: 
