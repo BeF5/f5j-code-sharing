@@ -60,7 +60,8 @@
         search:
           - f5jp.local
     
-    # For Ubuntu, install rpm with "sudo apt install rpm" command to install DO, AS3 and TS RPM packages 
+    # For Ubuntu, install rpm with "sudo apt install rpm" command to install DO, AS3 and TS RPM packages
+    # Download DO, AS and TS RPM packages in your Ansible Host in advance 
     - name: Task 8 - Install DO
       bigip_lx_package:
         provider: "{{ provider }}"
@@ -109,8 +110,6 @@
         provider: "{{ provider }}"
         config_sync_ip: "{{ ha_selfip }}"
         mirror_primary_address: "{{ ha_selfip }}"
-        #unicast_failover:
-        #  - address: "{{ ha_selfip }}"
   
     - name: Task 16 - Add-to-trust to be executed only from bigip1 to add bigip2
       bigip_device_trust:
@@ -179,8 +178,8 @@
         state: "present"
         name: "pool_webservers"
         lb_method: "round-robin"
-        #monitors:
-        #  - "http"
+        monitors:
+          - "http"
       when: inventory_hostname in groups['ansible_test_master']
   
     - name: Task 24 - Add Pool Members to the Pool
