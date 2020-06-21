@@ -16,7 +16,7 @@ admin_password: xxxxxx
 root_user: root
 root_password: xxxxxx
 
-roles_path: /home/peoldadmin/ansible
+roles_path: /home/user1/ansible
 
 ext_vlan_name: vlan_internet
 ext_vlan_int: 1.1
