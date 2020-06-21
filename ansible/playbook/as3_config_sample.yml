@@ -10,7 +10,7 @@
   tasks:
   - name: CREATE AS3 JSON BODY
     set_fact:
-      as3_app_body: "{{ lookup('template', '../templates/as3_template.j2', split_lines=False) }}"
+      as3_app_body: "{{ lookup('template', '../template/as3_template.j2', split_lines=False) }}"
 
   - name: PUSH AS3
     uri:
