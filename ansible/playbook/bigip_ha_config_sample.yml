@@ -197,7 +197,7 @@
         provider: "{{ provider }}"
         state: "present"
         name: "rule_Sorry"
-        content: "{{ lookup('template', '../configs/irules/sorry_sample.tcl') }}"
+        content: "{{ lookup('template', '../config/irules/sorry_sample.tcl') }}"
         module: "ltm"
       when: inventory_hostname in groups['ansible_test_master']
   
