@@ -1,0 +1,21 @@
+---
+bigip_hostname: bigip2.local
+
+bigip_lic: ""
+
+nf_selfIP:
+  - selfIP: 192.168.1.2
+    netmask: 255.255.255.0
+    vlan_name: vlan_internet
+    port_lockdown: none
+  - selfIP: 192.168.2.2
+    netmask: 255.255.255.0
+    vlan_name: vlan_server
+    port_lockdown: default
+  - selfIP: 192.168.3.2
+    netmask: 255.255.255.0
+    vlan_name: vlan_ha
+    port_lockdown: default
+
+ha_selfip: '192.168.3.2'
+...
