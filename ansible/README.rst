@@ -25,4 +25,4 @@ BIG-IPをAnsibleで設定する際の、サンプルファイル (Ansible Playbo
   - bigip_config_sample.yml: BIG-IPの基本的な設定を実行する、Playbookのサンプル
   - bigip_ha_config_sample.yml: 工場出荷時の2つのBIG-IPインスタンスから、HA (High Availability)構成を実現する、Playbookのサンプル
 
-- templates: AS3による設定時のテンプレート (Jinja2)を格納するディレクトリ
+- template: AS3による設定時のテンプレート (Jinja2)を格納するディレクトリ
