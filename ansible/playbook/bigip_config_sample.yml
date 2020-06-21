@@ -1,0 +1,47 @@
+---
+- name: Create Pool, Pool Member and Virtual Server
+  hosts: ansible_test
+  connection: local
+  gather_facts: false
+  collections:
+  - f5networks.f5_module
+
+  tasks:
+    - name: Set up Provider
+      set_fact:
+        provider:
+          server: "{{ ansible_host }}"
+          user: "{{ ansible_user }}"
+          password: "{{ ansible_ssh_pass }}"
+          server_port: "443"
+          validate_certs: "no"
+
+    - name: Create a Pool
+      bigip_pool:
+        provider: "{{ provider }}"
+        name: "web_demo"
+        description: "foo-pool"
+        lb_method: "round-robin" 
+        monitors: "/Common/http"
+        monitor_type: "and_list"
+        slow_ramp_time: 120
+
+    - name: Add Pool Members to the Pool
+      bigip_pool_member:
+        provider: "{{ provider }}"
+        host: "{{ hostvars[item].ansible_host }}"
+        pool: "web_demo"
+        port: "80"
+      loop: "{{ groups['webservers'] }}"
+
+    - name: Create a Virtual Server
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        name: "vip1"
+        description: "foo-vip"
+        destination: "192.168.1.100"
+        pool: "web_demo"
+        port: "80"
+        enabled_vlans: "all"
+        snat: "Automap"
+...

@@ -4,3 +4,7 @@ bigip2 ansible_host=192.168.0.2
 
 [ansible_test_master]
 bigip1
+
+[webservers]
+web01 ansible_host=10.1.20.14 ansible_user=root private_ip=10.1.20.14
+web02 ansible_host=10.1.20.15 ansible_user=root private_ip=10.1.20.15

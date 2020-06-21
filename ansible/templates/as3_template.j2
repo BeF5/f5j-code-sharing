@@ -1,0 +1,29 @@
+"Shared": {
+    "class": "Application",
+    "template": "shared",
+    "vip1": {
+        "class": "Service_HTTP",
+        "virtualAddresses": [
+            "{{ private_ip }}"
+        ],
+        "pool": "web_demo"
+    },
+    "web_demo": {
+        "class": "Pool",
+        "monitors": [
+            "http"
+        ],
+        "members": [
+            {
+                "servicePort": 80,
+                "serverAddresses": [
+                    {% set comma = joiner(",") %}
+                    {% for mem in pool_members %}
+                        {{comma()}} "{{  hostvars[mem]['ansible_host']  }}"
+                    {% endfor %}
+
+                ]
+            }
+        ]
+    }
+}
