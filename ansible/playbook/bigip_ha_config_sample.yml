@@ -1,4 +1,4 @@
-# Tested with Ansible 2.9.6
+# Tested with Ansible 2.9.2 and TMOS 15.1.0.2
 ---
 - name: create 2x BIG-IP HA instances with basic configurations
   hosts: ansible_demo

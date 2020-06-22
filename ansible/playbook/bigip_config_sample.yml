@@ -1,4 +1,4 @@
-# Tested with Ansible 2.9.2
+# Tested with Ansible 2.9.2 and TMOS 15.1.0.1
 ---
 - name: Create Pool, Pool Member and Virtual Server
   hosts: ansible_demo
