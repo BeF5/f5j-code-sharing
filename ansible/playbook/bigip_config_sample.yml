@@ -1,3 +1,4 @@
+# Tested with Ansible 2.9.2
 ---
 - name: Create Pool, Pool Member and Virtual Server
   hosts: ansible_demo

@@ -1,3 +1,4 @@
+# Tested with Ansible 2.9.2 and AS3 3.17.1 (TMOS 15.1.0.1)
 ---
 - name: LINKLIGHT AS3
   hosts: ansible_test
