@@ -25,11 +25,11 @@ o365update.pyの機能
 
 5.	ユーザ設定に従って下記3パターンのURL、IPv4アドレス、IPv6アドレスをそれぞれ抽出
 
-    * 全て
-    * Express Routeを通すもの、
-    * Express Routeを通さないもの
+    *   全て
+    *   Express Routeを通すもの、
+    *   Express Routeを通さないもの
 
-6.  URLのリストに対して、
+6.  URLのリストに対して
 
     #.  "*"を含むホスト名またはサブドメインは一番近い右側の “.”の手前まで削除
     #.  全て小文字に変更
@@ -48,9 +48,6 @@ o365update.pyの機能
 9.	ConfigをSaveし
 10.	Config-Syncを行います
 
-.. note::
-
-    注釈のテスト
 
 
 
