@@ -16,6 +16,6 @@ __ MANUAL2_
 
 サンプルプログラム `o365update.py`__
 
-.. _o365update.py: ./datagroup/o365update.py
+.. _o365update.py: ./o365update.py
 
 __ o365update.py_
