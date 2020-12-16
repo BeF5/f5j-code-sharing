@@ -138,10 +138,21 @@ BIG-IP Data Groupの名称
 ==============================================
 
 下記コマンドを打ちcrontabの編集モードに入る
+
+.. code-block:: text
+
     # crontab –e
+
 要件に応じて下記のように記述を追加。例は一時間おきの実行。o365update.pyのパスは実際に応じて適宜変更してください。
+
+.. code-block:: text
+
     5 * * * * python /var/tmp/o365/o365update.py
+
 保存終了後、下記コマンドを用いて変更が反映されていることを確認します。
+
+.. code-block:: text
+
     | # crontab -l
     | # cron tab for root
     | 1-59/10 * * * * /usr/bin/diskmonitor
@@ -167,6 +178,8 @@ Microsoft社の下記サイトでは、エンドポイントリストの参照�
 に書き込まれますが、長期間の運用ではログファイルのサイズが肥大することが考えられます。BIG-IPの他のログファイルと同様にlogrotateの対象に加えるには下記のように設定します。
 
 以下のようにTMSHコマンドを打つと
+
+.. code-block:: text
 
     (tmos)# edit /sys log-rotate all-properties
 
@@ -211,9 +224,15 @@ Microsoft社の下記サイトでは、エンドポイントリストの参照�
     }
 
 ":" "w" ":" "x"とキーを押して編集画面を抜け、下記プロンプトでyと入力して編集した内容を保存
+
+.. code-block:: text
+
     # Save changes? (y/n/e) y
 
 下記コマンドを入力し設定を保存します
+
+.. code-block:: text
+
     (tmos)# save /sys config
 
 
