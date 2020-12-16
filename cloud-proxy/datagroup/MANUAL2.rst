@@ -6,7 +6,7 @@ o365update.pyの使い方 - 詳細
 
 1. オプション設定
 =========================
-o365update.pyの22~46行を必要に応じて変更してください
+o365update.pyの37~73行を必要に応じて変更してください
 
 取得するデータの選択
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -99,8 +99,15 @@ BIG-IP Data Groupの名称
 ==============================================
 
 コマンドラインから
+
+.. code-block:: text
+
     # python /var/tmp/o365/o365update.py
+
 と入力し、動作を確認します。別のターミナルを開き下記のようにログファイルを表示することで同時にログを確認できます。
+
+.. code-block:: text
+
     # tail -f /var/log/o365_update
 
 （ログ出力先をデフォルト値から変更された場合は “/var/log/o365_update” の部分を適宜変更してください）
@@ -164,7 +171,7 @@ BIG-IP Data Groupの名称
     | 5 * * * * python /var/tmp/o365update.sh
 
 
-Microsoft社の下記サイトでは、エンドポイントリストの参照は１時間に１回に留めることが推奨されています。
+Microsoft社の下記サイトでは、エンドポイントリストの参照は１時間に１回以下の頻度に留めることが推奨されています。
 
     | `Office 365 IP アドレスと URL の Web サービス - Microsoft 365 Enterprise | Microsoft Docs`
     | https://docs.microsoft.com/ja-jp/microsoft-365/enterprise/microsoft-365-ip-web-service

@@ -14,3 +14,8 @@ o365update.pyの使い方 - 詳細 `MANUAL2`__
 
 __ MANUAL2_
 
+サンプルプログラム `o365update.py`__
+
+.. _o365update.py: ./datagroup/o365update.py
+
+__ o365update.py_
