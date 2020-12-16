@@ -22,7 +22,25 @@ BIG-IPでURLのリストを格納する場所として
 
 コンテンツ
 --------------------------------
-"datagroup"フォルダの下にマニュアルとサンプルプログラムがございます。
+
+o365update.pyの使い方 - 概要 `MANUAL1`__
+
+.. _MANUAL1: ./datagroup/MANUAL1.rst
+
+__ MANUAL1_
+
+o365update.pyの使い方 - 詳細 `MANUAL2`__
+
+.. _MANUAL2: ./datagroup/MANUAL2.rst
+
+__ MANUAL2_
+
+サンプルプログラム `o365update.py`__
+
+.. _o365update.py: ./datagroup/o365update.py
+
+__ o365update.py_
+
 
 免責
 ^^^^^^^^^^^^^^^^^^

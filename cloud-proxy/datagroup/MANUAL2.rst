@@ -2,6 +2,8 @@
 o365update.pyの使い方 - 詳細
 ==============================================
 
+.. contents:: 目次
+
 1. オプション設定
 =========================
 o365update.pyの22~46行を必要に応じて変更してください
@@ -216,7 +218,7 @@ Microsoft社の下記サイトでは、エンドポイントリストの参照�
 
 
 関連情報
-^^^^^^^^^^^^^^^^^^^^^
+=====================
 
     * Office 365 の URL と IP アドレスの範囲 - Microsoft 365 Enterprise | Microsoft Docs https://docs.microsoft.com/ja-jp/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide&WT.mc_id=email
 
