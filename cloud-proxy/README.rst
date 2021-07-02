@@ -48,7 +48,7 @@ __ o365update.py_
 v1.3 (2021.7.2)
 
 * "category"フィールドの値、"Allow"、"Optimize", "Default"のそれぞれに関して、URL/IPアドレスリストに取り込むか否かのオプションを追加
-* MS側の仕様としてで"allowUrls"、"defaultUrls"というレコード、serviceAreaから"Yammer"が廃止されたため、当プログラムからも該当部分を削除
+* MS側の仕様として"allowUrls"、"defaultUrls"というレコード、"serviceArea"レコードから"Yammer"という値が廃止されたため、当プログラムからも該当部分を削除
 
     - https://docs.microsoft.com/ja-jp/microsoft-365/enterprise/microsoft-365-ip-web-service
 
