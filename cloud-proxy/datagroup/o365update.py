@@ -35,13 +35,13 @@ import sys
 
 # Record types to download & update
 use_url = 1     # URL based proxy bypassing: 0=do not use, 1=use
-use_ipv4 = 1    # IPv4 based routing: 0=do not use, 1=use
-use_ipv6 = 1    # IPv6 based routing: 0=do not use, 1=use
+use_ipv4 = 0    # IPv4 based routing: 0=do not use, 1=use
+use_ipv6 = 0    # IPv6 based routing: 0=do not use, 1=use
 
 # Generate 2 more lists with & without Express Route
-use_url_express_route = 1   # URL lists: 0=do not generate, 1=generate
-use_ipv4_express_route = 1  # IPv4 lists: 0=do not generate, 1=generate
-use_ipv6_express_route = 1  # IPv6 lists: 0=do not generate, 1=generate
+use_url_express_route = 0   # URL lists: 0=do not generate, 1=generate
+use_ipv4_express_route = 0  # IPv4 lists: 0=do not generate, 1=generate
+use_ipv6_express_route = 0  # IPv6 lists: 0=do not generate, 1=generate
 
 # O365 "SeviceArea" (application) to include in bypass lists
 care_common = 1     # "Common": 0=ignore, 1=include
@@ -55,7 +55,7 @@ care_cat_optimize = 1   # "Optimize" category: 0=ignore, 1=include
 care_cat_default = 1    # "Default" category: 0=ignore, 1=include
 
 # Action if O365 endpoint list is not updated
-force_o365_record_refresh = 1   # 0=do not update, 1=update (for test/debug purpose)
+force_o365_record_refresh = 0   # 0=do not update, 1=update (for test/debug purpose)
 
 # BIG-IP Data Group name
 dg_urls_to_bypass_all = "ext_o365_url"              # All URLs
@@ -73,7 +73,7 @@ device_group_name = "dg-failover-1"     # Name of Sync-Failover Device Group.  R
 ha_config = 1                           # 0=stand alone, 1=HA paired
 
 # Log configuration
-log_level = 2   # 0=none, 1=normal, 2=verbose
+log_level = 1   # 0=none, 1=normal, 2=verbose
 log_dest_file = "/var/log/o365_update"
 
 #-----------------------------------------------------------------------
