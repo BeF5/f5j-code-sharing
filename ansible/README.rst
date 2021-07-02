@@ -26,5 +26,6 @@ BIG-IPをAnsibleで設定する際の、サンプルコード (Ansible Playbook�
   - as3_comfig_sample.yml: AS3を使ってBIG-IPの基本的な設定を実行する、Playbookのサンプル
   - bigip_config_sample.yml: BIG-IPの基本的な設定を実行する、Playbookのサンプル
   - bigip_ha_config_sample.yml: 工場出荷時の2つのBIG-IPインスタンスから、HA (High Availability)構成を実現する、Playbookのサンプル
+  - bigip_explicit_fwdproxy_create.yml: BIG-IPを明示フォワードプロキシ (Explicit Forward Proxy)として構成する際の、Playbookのサンプル
 
 - template: AS3による設定時のテンプレート (Jinja2)を格納するディレクトリ

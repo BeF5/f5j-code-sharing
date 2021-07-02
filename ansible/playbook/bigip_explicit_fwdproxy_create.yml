@@ -1,0 +1,73 @@
+# Tested with Ansible 2.9.2 and TMOS 15.1.0.1
+---
+- name: Set up a BIG-IP as Explicit Forward Proxy
+  hosts: ansible_demo
+  gather_facts: no
+  connection: local
+  collections: 
+  - f5networks.f5_modules
+  vars:
+    dnssv1: "8.8.8.8:53"
+    dnssv2: "8.8.4.4:53"
+    dns_resolver: "dns_resolver"
+
+  tasks:
+      
+    - name: Task - Create a DNS resolver
+      bigip_dns_resolver:
+        provider: "{{ provider }}"
+        state: "present"
+        name: "{{ dns_resolver }}"
+    
+    - name: Task - Add a Forward Zone in the DNS resolver
+      bigip_command:
+        provider: "{{ provider }}"
+        commands: "modify net dns-resolver {{ dns_resolver }} forward-zones add { . { nameservers add { {{ dnssv1 }} {{ dnssv2 }} } } }"
+
+    - name: Task - Create a HTTP tunnel
+      bigip_tunnel:
+        provider: "{{ provider }}"
+        state: "present"
+        name: "explicit_tcp_tunnel"
+        profile: "tcp-forward"
+
+    - name: Task - Create a HTTP profile for Explicit Forward Proxy 
+      bigip_profile_http:
+        provider: "{{ provider }}"
+        state: "present"
+        name: "http_explicit_proxy"
+        proxy_type: "explicit"
+        parent: "http-explicit"
+        dns_resolver: "{{ dns_resolver }}"
+    
+    - name: Task - Apply HTTP tunnel to the HTTP profile
+      bigip_command:
+        provider: "{{ provider }}"
+        commands: "modify ltm profile http http_explicit_proxy explicit-proxy { tunnel-name explicit_tcp_tunnel }"
+
+    - name: Task - Create a Virtual Server for Explicit Proxy 
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        state: "present"
+        name: "vs_explicit_proxy"
+        partition: "Common"
+        destination: "192.168.1.100"
+        port: "3128"
+        snat: "Automap"
+        profiles:
+          - "http_explicit_proxy"
+        address_translation: "true"
+        port_translation: "true"
+    
+    - name: Task - Create a Virtual Server for HTTP tunnel 
+      bigip_virtual_server:
+        provider: "{{ provider }}"
+        state: "present"
+        name: "explicit_vs_443"
+        partition: "Common"
+        destination: "0.0.0.0"
+        port: "443"
+        snat: "Automap"
+        address_translation: "false"
+        port_translation: "false"
+...
