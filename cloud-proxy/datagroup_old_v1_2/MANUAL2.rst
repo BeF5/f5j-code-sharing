@@ -6,7 +6,7 @@ o365update.pyの使い方 - 詳細
 
 1. オプション設定
 =========================
-o365update.pyの37~77行を必要に応じて変更してください
+o365update.pyの37~73行を必要に応じて変更してください
 
 取得するデータの選択
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -35,17 +35,7 @@ o365update.pyの37~77行を必要に応じて変更してください
     care_exchange,1,"1= “Exchange”を対象とする, 0=しない"
     care_skype,1,"1= “Skype”を対象とする, 0=しない"
     care_sharepoint,1,"1= “Sharepoint”を対象とする, 0=しない"
-
-データ取得の対象とするcategoryの選択
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. csv-table::
-    :header: "項目", "デフォルト", "説明"
-    :widths: 15, 10, 40
-
-    care_cat_allow,1,"1= “Allow”を対象とする, 0=しない"
-    care_cat_optimize,1,"1= “Optimize”を対象とする, 0=しない"
-    care_cat_default ,1,"1= “Default”を対象とする, 0=しない"
+    care_yammer,1,"1= “Yammer”を対象とする, 0=しない"
 
 MSが配布するデータが更新されていなくてもBIG-IPへの更新を行うか
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -256,5 +246,5 @@ Microsoft社の下記サイトでは、エンドポイントリストの参照�
 関連情報
 =====================
 
-    * Office 365 の URL と IP アドレスの範囲 - Microsoft 365 Enterprise | Microsoft Docs https://docs.microsoft.com/ja-jp/microsoft-365/enterprise/urls-and-ip-address-ranges
-    * Office 365 IP アドレスと URL の Web サービス - Microsoft 365 Enterprise | Microsoft Docs https://docs.microsoft.com/ja-jp/microsoft-365/enterprise/microsoft-365-ip-web-service
+    * Office 365 の URL と IP アドレスの範囲 - Microsoft 365 Enterprise | Microsoft Docs https://docs.microsoft.com/ja-jp/microsoft-365/enterprise/urls-and-ip-address-ranges?view=o365-worldwide&WT.mc_id=email
+

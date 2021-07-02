@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # O365 url/ip update automation for BIG-IP
-# Version: 1.30
-# Last Modified: 2 July 2021
+# Version: 1.20
+# Last Modified: 26 July 2019
 # Author: Makoto Omura, F5 Networks Japan G.K.
 #
 # This Sample Software provided by the author is for illustrative
@@ -35,27 +35,23 @@ import sys
 
 # Record types to download & update
 use_url = 1     # URL based proxy bypassing: 0=do not use, 1=use
-use_ipv4 = 1    # IPv4 based routing: 0=do not use, 1=use
-use_ipv6 = 1    # IPv6 based routing: 0=do not use, 1=use
+use_ipv4 = 0    # IPv4 based routing: 0=do not use, 1=use
+use_ipv6 = 0    # IPv6 based routing: 0=do not use, 1=use
 
 # Generate 2 more lists with & without Express Route
-use_url_express_route = 1   # URL lists: 0=do not generate, 1=generate
-use_ipv4_express_route = 1  # IPv4 lists: 0=do not generate, 1=generate
-use_ipv6_express_route = 1  # IPv6 lists: 0=do not generate, 1=generate
+use_url_express_route = 0   # URL lists: 0=do not generate, 1=generate
+use_ipv4_express_route = 0  # IPv4 lists: 0=do not generate, 1=generate
+use_ipv6_express_route = 0  # IPv6 lists: 0=do not generate, 1=generate
 
-# O365 "SeviceArea" (application) to include in bypass lists
-care_common = 1     # "Common": 0=ignore, 1=include
-care_exchange = 1   # "Exchange": 0=ignore, 1=include
-care_skype = 1      # "Skype": 0=ignore, 1=include
-care_sharepoint = 1 # "SharePoint": 0=ignore, 1=include
-
-# O365 "category" to include in bypass lists
-care_cat_allow  = 1     # "Allow" category: 0=ignore, 1=include
-care_cat_optimize = 1   # "Optimize" category: 0=ignore, 1=include
-care_cat_default = 1    # "Default" category: 0=ignore, 1=include
+# O365 "SeviceArea" (application) this BIG-IP should take care
+care_common = 1     # "Common": 0=do not care, 1=care
+care_exchange = 1   # "Exchange": 0=do not care, 1=care
+care_skype = 1      # "Skype": 0=do not care, 1=care
+care_sharepoint = 1 # "SharePoint": 0=do not care, 1=care
+care_yammer = 1     # "Yammer": 0=do not care, 1=care
 
 # Action if O365 endpoint list is not updated
-force_o365_record_refresh = 1   # 0=do not update, 1=update (for test/debug purpose)
+force_o365_record_refresh = 0   # 0=do not update, 1=update (for test/debug purpose)
 
 # BIG-IP Data Group name
 dg_urls_to_bypass_all = "ext_o365_url"              # All URLs
@@ -69,11 +65,11 @@ dg_ip6s_to_bypass_er_true = "ext_o365_ip6_er_true"  # IPv6 endpoints to go via E
 dg_ip6s_to_bypass_er_none = "ext_o365_ip6_er_none"  # IPv6 endpoints not to go via Express Route
 
 # BIG-IP HA Configuration
-device_group_name = "dg-failover-1"     # Name of Sync-Failover Device Group.  Required for HA paired BIG-IP.
+device_group_name = "device-group1"     # Name of Sync-Failover Device Group.  Required for HA paired BIG-IP.
 ha_config = 1                           # 0=stand alone, 1=HA paired
 
 # Log configuration
-log_level = 2   # 0=none, 1=normal, 2=verbose
+log_level = 1   # 0=none, 1=normal, 2=verbose
 log_dest_file = "/var/log/o365_update"
 
 #-----------------------------------------------------------------------
@@ -121,6 +117,18 @@ def extract_urls(o365_ep_element, output_list, log_label):
     if o365_ep_element.has_key('urls'):
         list_urls = list(o365_ep_element['urls'])
         for url in list_urls:
+            output_list.append(url)
+
+    # Append "allowUrls" if existent in each record
+    if o365_ep_element.has_key('allowUrls'):
+        list_allow_urls = list(o365_ep_element['allowUrls'])
+        for url in list_allow_urls:
+            output_list.append(url)
+
+    # Append "defaultUrls" if existent in each record
+    if o365_ep_element.has_key('defaultUrls'):
+        list_default_urls = o365_ep_element['defaultUrls']
+        for url in list_default_urls:
             output_list.append(url)
 
 
@@ -328,7 +336,7 @@ def main():
         log(1, "Valid previous VERSION was not found.  Wrote dummy value in " + file_ms_o365_version + ".")
 
     # -----------------------------------------------------------------------
-    # O365 endpoints list VERSION check - lookup MS server
+    # O365 endpoints list VERSION check
     # -----------------------------------------------------------------------
     request_string = uri_ms_o365_version + guid
     conn = httplib.HTTPSConnection(url_ms_o365_version)
@@ -379,48 +387,39 @@ def main():
         dict_o365_all = json.loads(res.read())
 
     # -----------------------------------------------------------------------
-    # Pick only required categories of records
-    # -----------------------------------------------------------------------
-
-
-    # -----------------------------------------------------------------------
     # Process each record (O365 endpoint) which is dictionary type
     # -----------------------------------------------------------------------
     for dict_o365_record in dict_o365_all:
-        ep_service_area = str(dict_o365_record['serviceArea'])
-        ep_category = str(dict_o365_record['category'])
+        service_area = str(dict_o365_record['serviceArea'])
         id = str(dict_o365_record['id'])
 
-        if (care_common and ep_service_area == "Common") \
-            or (care_exchange and ep_service_area == "Exchange") \
-            or (care_sharepoint and ep_service_area == "SharePoint") \
-            or (care_skype and ep_service_area == "Skype"):
+        if (care_common and service_area == "Common") \
+            or (care_exchange and service_area == "Exchange") \
+            or (care_sharepoint and service_area == "SharePoint") \
+            or (care_skype and service_area == "Skype") \
+            or (care_yammer and service_area == "Yammer"):
 
-            if (care_cat_allow and ep_category == "Allow") \
-                or (care_cat_optimize and ep_category == "Optimize") \
-                or (care_cat_default and ep_category == "Default"):
+            if use_url:
+                #def extract_urls(o365_ep_element, output_list, log_label):
+                extract_urls(dict_o365_record, list_urls_all, "URL_ALL")
 
-                if use_url:
-                    #def extract_urls(o365_ep_element, output_list, log_label):
-                    extract_urls(dict_o365_record, list_urls_all, "URL_ALL")
+            if use_url_express_route:
+                #def extract_urls(o365_ep_element, output_list, log_label):
+                if (dict_o365_record.get("expressRoute") == 1):
+                    extract_urls(dict_o365_record, list_urls_er_true, "URL_ER_TRUE")
+                else:
+                    extract_urls(dict_o365_record, list_urls_er_none, "URL_ER NONE")
 
-                if use_url_express_route:
-                    #def extract_urls(o365_ep_element, output_list, log_label):
-                    if (dict_o365_record.get("expressRoute") == 1):
-                        extract_urls(dict_o365_record, list_urls_er_true, "URL_ER_TRUE")
-                    else:
-                        extract_urls(dict_o365_record, list_urls_er_none, "URL_ER NONE")
+            if use_ipv4 or use_ipv6:
+                #def extract_ips(o365_ep_element, output_list_v4, output_list_v6, log_label):
+                extract_ips(dict_o365_record, list_ips4_all, list_ips6_all, "URL_ALL")
 
-                if use_ipv4 or use_ipv6:
-                    #def extract_ips(o365_ep_element, output_list_v4, output_list_v6, log_label):
-                    extract_ips(dict_o365_record, list_ips4_all, list_ips6_all, "URL_ALL")
-
-                if use_ipv4_express_route or use_ipv6_express_route:
-                    #def extract_ips(o365_ep_element, output_list_v4, output_list_v6, log_label):
-                    if (dict_o365_record.get("expressRoute") == 1):
-                        extract_ips(dict_o365_record, list_ips4_er_true, list_ips6_er_true, "URL_ER_TRUE")
-                    else:
-                        extract_ips(dict_o365_record, list_ips4_er_none, list_ips6_er_none, "URL_ER NONE")
+            if use_ipv4_express_route or use_ipv6_express_route:
+                #def extract_ips(o365_ep_element, output_list_v4, output_list_v6, log_label):
+                if (dict_o365_record.get("expressRoute") == 1):
+                    extract_ips(dict_o365_record, list_ips4_er_true, list_ips6_er_true, "URL_ER_TRUE")
+                else:
+                    extract_ips(dict_o365_record, list_ips4_er_none, list_ips6_er_none, "URL_ER NONE")
 
     # -----------------------------------------------------------------------
     # Process lists of ips & urls
